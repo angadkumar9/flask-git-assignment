@@ -17,6 +17,9 @@ def api():
     with open("data.json") as f:
         return jsonify(json.load(f))
 
+@app.route("/todo")
+def todo():
+    return render_template("todo.html")
 
 # ---------------- Backend routes ----------------
 
