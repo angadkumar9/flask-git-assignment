@@ -22,6 +22,25 @@ def todo():
     return render_template("todo.html")
 
 # ---------------- Backend routes ----------------
+client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
+db = client["todo_db"]
+todo_collection = db["todos"]
+
+
+@app.route("/submittodoitem", methods=["POST"])
+def submit_todo_item():
+    data = request.get_json(silent=True) or request.form
+    item_name = data.get("itemName")
+    item_description = data.get("itemDescription")
+
+    if not item_name or not item_description:
+        return jsonify({"error": "itemName and itemDescription required"}), 400
+
+    todo_collection.insert_one({
+        "itemName": item_name,
+        "itemDescription": item_description
+    })
+    return jsonify({"message": "To-Do item saved"}), 201
 
 if __name__ == "__main__":
     app.run(debug=True)
